@@ -1,4 +1,5 @@
 --
+-- 2016, Enea Scioni         <enea.scioni@kuleuven.be>
 -- 2015, Enea Scioni         <enea.scioni@unife.it>
 -- 2013, Markus Klotzbuecher <markus.klotzbuecher@mech.kuleuven.be>
 -- Useful code snips
@@ -14,7 +15,7 @@ module('utils')
 
 -- increment major on API breaks
 -- increment minor on non breaking changes
-VERSION=0.998
+VERSION=0.999
 
 function append(car, ...)
    assert(type(car) == 'table')
@@ -605,4 +606,17 @@ function merge_tab(t1,t2,preserve)
   for i,v in pairs(t2) do
     if not t1[i] or (not preserve) then t1[i] = v end
   end
+end
+
+-- Selection of part of a table
+-- @param t table
+-- @param first initial index
+-- @param last last index
+-- @returns table[first:last]
+function subrange(t, first, last)
+  local sub = {}
+  for i=first,last do
+    sub[#sub + 1] = t[i]
+  end
+  return sub
 end

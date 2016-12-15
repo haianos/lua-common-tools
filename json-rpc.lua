@@ -9,6 +9,7 @@
 --------------------------------------------------
 
 local json = require('json')
+local utils = require('utils')
 local M = {}
 
 -- population with error objects,
@@ -138,13 +139,8 @@ local function server_response(methods,request)
   if not ret[1] then 
     return jsonrpc.response_error(req,'invalid_params',ret[2])
   end
-  ret[1] = nil
-  return jsonrpc.response(req,unpack(ret))
---   local ok, ret = pcall(fnc,unpack(req['params']))
---   if not ok then 
---     return jsonrpc.response_error(req,'invalid_params',ret)
---   end
---   return jsonrpc.response(req,ret)
+  if not req['id'] then return true end -- notification only
+  return jsonrpc.response(req,unpack(utils.subrange(ret,2,#ret)))
 end
 
 M.add_errobj      = add_errobj

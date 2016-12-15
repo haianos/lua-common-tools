@@ -15,7 +15,8 @@ methods = {
   sub = function(a,b) return a-b end,
   mul = function(a,b) return a*b end,
   div = function(a,b) return a/b end,
-  several = function(a,b) return a/b, b/a end
+  several = function(a,b) return a/b, b/a end,
+  info    = function(str) print(str) end
 }
 
 str = jsonrpc.request('sum',2,3)
@@ -44,8 +45,6 @@ str = jsonrpc.request('sum',1,'gatto')
 res = jsonrpc.server_response(methods,str)
 print('result is invalid params',res)
 --
-    
-    
 str = jsonrpc.request('several',10,20)    
 print('testing server_response')
 res = jsonrpc.server_response(methods,str)
@@ -55,3 +54,6 @@ str = jsonrpc.request('several',1,'gatto')
 res = jsonrpc.server_response(methods,str)
 print('result is invalid params',res)
 --
+str = jsonrpc.notification('info','qualcosa')
+res = jsonrpc.server_response(methods,str)
+print('result is true',res)
