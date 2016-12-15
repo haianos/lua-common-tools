@@ -135,7 +135,9 @@ local function server_response(methods,request)
   if not fnc then -- method not found
     return jsonrpc.response_error(req,'method_not_found')
   end
-  local ret = {pcall(fnc,unpack(req['params']))}
+  local params = req['params'] or {}
+  if type(params) ~= 'table' then params = {params} end
+  local ret = {pcall(fnc,unpack(params))}
   if not ret[1] then 
     return jsonrpc.response_error(req,'invalid_params',ret[2])
   end
