@@ -1,5 +1,5 @@
 --
--- 2016, Enea Scioni         <enea.scioni@kuleuven.be>
+-- 2016-2017, Enea Scioni    <enea.scioni@kuleuven.be>
 -- 2015, Enea Scioni         <enea.scioni@unife.it>
 -- 2013, Markus Klotzbuecher <markus.klotzbuecher@mech.kuleuven.be>
 -- Useful code snips
@@ -15,7 +15,7 @@ module('utils')
 
 -- increment major on API breaks
 -- increment minor on non breaking changes
-VERSION=0.999
+VERSION=1.000
 
 function append(car, ...)
    assert(type(car) == 'table')
@@ -362,6 +362,25 @@ function table_unique(t)
       if not table_has(res, v) then res[#res+1]=v end
    end
    return res
+end
+
+-- Iterator for ordered keys
+-- @param t table (unordered)
+-- @param f ordering function (alphabetically if nil)
+-- @return key, value (iterator)
+--- taken from <https://www.lua.org/pil/19.3.html>
+function pairs_order (t, f)
+  local a = {}
+  for n in pairs(t) do table.insert(a, n) end
+    table.sort(a, f)
+    local i = 0      -- iterator variable
+    local iter = function ()   -- iterator function
+    i = i + 1
+    if a[i] == nil then return nil
+    else return a[i], t[a[i]]
+    end
+  end
+  return iter
 end
 
 --- Convert arguments list into key-value pairs.
