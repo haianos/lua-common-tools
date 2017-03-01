@@ -666,7 +666,7 @@ function cmemoize(f,dim)
   return function (...)                  -- new version of ’f’, with memoizing
     local r = mem[table.concat({...},',')]
     if r == nil then                     -- no previous result?
-      if utils.list_size(mem) == dim then
+      if list_size(mem) == dim then
         _delfnc(mem)                     -- delete less-used value
       end
       r = { value=f(...), count=0 }  -- calls original function
