@@ -15,7 +15,7 @@ module('utils')
 
 -- increment major on API breaks
 -- increment minor on non breaking changes
-VERSION=1.000
+VERSION=1.010
 
 function append(car, ...)
    assert(type(car) == 'table')
@@ -638,4 +638,41 @@ function subrange(t, first, last)
     sub[#sub + 1] = t[i]
   end
   return sub
+end
+                                    
+-- Smart Cached Memoize
+--- It caches the result of a function.
+--- If the cache is full and a new execution occurs,
+--- the "less valuable" result (less frequent) is deleted.
+--- It differs from a pure memoize function, since
+--- the memory usage is limited to the cache dimension.
+--- Supports multiple args functions
+-- @param f function to memoize
+-- @param dim cache dimension
+-- @returns result of function
+function cmemoize(f,dim)
+  local _delfnc = function(tab)
+    local idx, count
+    for i,v in pairs(tab) do
+      if not idx   then idx=i end
+      if not count then count = v.count end
+      if v.count < count then idx=i; count = v.count end
+    end
+    tab[idx] = nil
+  end
+  
+  local mem = {}                       -- memoizing table
+  setmetatable(mem, {__mode = "kv"})   -- make it weak
+  return function (...)                  -- new version of ’f’, with memoizing
+    local r = mem[table.concat({...},',')]
+    if r == nil then                     -- no previous result?
+      if utils.list_size(mem) == dim then
+        _delfnc(mem)                     -- delete less-used value
+      end
+      r = { value=f(...), count=0 }  -- calls original function
+      mem[table.concat({...},',')] = r      -- store result for reuse
+    end
+    r.count = r.count + 1  
+    return r.value
+  end
 end
