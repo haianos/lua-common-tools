@@ -15,7 +15,7 @@ module('utils')
 
 -- increment major on API breaks
 -- increment minor on non breaking changes
-VERSION=1.010
+VERSION=1.011
 
 function append(car, ...)
    assert(type(car) == 'table')
@@ -503,6 +503,23 @@ function eval_sandbox(unsafe_code, env)
    local unsafe_fun, msg = load(unsafe_code, nil, 't', env)
    if not unsafe_fun then return false, msg end
    return pcall_bt(unsafe_fun)
+end
+
+
+--- Evaluate a chunk of code in a constrained environment.
+-- Like `eval_sandbox`, but compatible with plain 5.1
+-- (luajit uses eval_sandbox instead)
+-- @param unsafe_code code string
+-- @param env environment table (optional)
+-- @param chunkname named code chunk (optional)
+-- @return function or error message
+local function eval_sandbox51(code,env,chunkname)
+  local env = env or {}
+  local chunkname = chunkname or 'anonymous'
+  local untrusted_fnc, msg    = loadstring(code)
+  if not untrusted_fnc then return false, msg end
+  setfenv(untrusted_fnc,env)
+  return pcall_bt(untrusted_fnc)
 end
 
 
