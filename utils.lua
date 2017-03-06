@@ -7,9 +7,9 @@
 --
 
 local type, pairs, ipairs, setmetatable, getmetatable, assert, table,
-   print, tostring, string, io, unpack, error, load, pcall, debug, xpcall = type,
+   print, tostring, string, io, unpack, error, load, pcall, debug, xpcall, loadstring = type,
    pairs, ipairs, setmetatable, getmetatable, assert, table, print,
-   tostring, string, io, unpack, error, load, pcall, debug, xpcall
+   tostring, string, io, unpack, error, load, pcall, debug, xpcall, loadstring
 
 module('utils')
 
