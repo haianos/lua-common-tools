@@ -6,18 +6,13 @@
 -- some own ones, some collected from the lua wiki
 --
 
-local type, pairs, ipairs, setmetatable, getmetatable, assert, table,
-   print, tostring, string, io, unpack, error, load, pcall, debug, xpcall, loadstring = type,
-   pairs, ipairs, setmetatable, getmetatable, assert, table, print,
-   tostring, string, io, unpack, error, load, pcall, debug, xpcall, loadstring
-
-module('utils')
+local M = {}
 
 -- increment major on API breaks
 -- increment minor on non breaking changes
-VERSION=1.011
+M.VERSION=1.011
 
-function append(car, ...)
+local function append(car, ...)
    assert(type(car) == 'table')
    local new_array = {}
 
@@ -32,7 +27,7 @@ function append(car, ...)
    return new_array
 end
 
-function tab2str( tbl )
+local function tab2str( tbl )
 
    local function val_to_str ( v )
       if "string" == type( v ) then
@@ -75,7 +70,7 @@ end
 -- @param limit maximum line length
 -- @param indent regular indentation
 -- @param indent1 indentation of first line
-function wrap(str, limit, indent, indent1)
+local function wrap(str, limit, indent, indent1)
    indent = indent or ""
    indent1 = indent1 or indent
    limit = limit or 72
@@ -90,18 +85,18 @@ function wrap(str, limit, indent, indent1)
 end
 
 
-function pp(...)
+local function pp(...)
    if type(val) == 'table' then print(tab2str(val))
    else print(val) end
 end
 
-function lpad(str, len, char, strlen)
+local function lpad(str, len, char, strlen)
    strlen = strlen or #str
    if char == nil then char = ' ' end
    return string.rep(char, len - strlen) .. str
 end
 
-function rpad(str, len, char, strlen)
+local function rpad(str, len, char, strlen)
    strlen = strlen or #str
    if char == nil then char = ' ' end
    return str .. string.rep(char, len - strlen)
@@ -109,15 +104,15 @@ end
 
 -- Trim functions: http://lua-users.org/wiki/CommonFunctions
 -- Licensed under the same terms as Lua itself.--DavidManura
-function trim(s)
+local function trim(s)
    return (s:gsub("^%s*(.-)%s*$", "%1"))    -- from PiL2 20.4
 end
 
 -- remove leading whitespace from string.
-function ltrim(s) return (s:gsub("^%s*", "")) end
+local function ltrim(s) return (s:gsub("^%s*", "")) end
 
 -- remove trailing whitespace from string.
-function rtrim(s)
+local function rtrim(s)
    local n = #s
    while n > 0 and s:find("^%s", n) do n = n - 1 end
    return s:sub(1, n)
@@ -127,7 +122,7 @@ end
 -- @param str string
 -- @return stripped string
 -- @return number of replacements
-function strip_ansi(str) return string.gsub(str, "\27%[%d+m", "") end
+local function strip_ansi(str) return string.gsub(str, "\27%[%d+m", "") end
 
 --- Convert string to string of fixed lenght.
 -- Will either pad with whitespace if too short or will cut of tail if
@@ -136,7 +131,7 @@ function strip_ansi(str) return string.gsub(str, "\27%[%d+m", "") end
 -- @param len lenght to set to.
 -- @param dots boolean, if true append dots to truncated strings.
 -- @return processed string.
-function strsetlen(str, len, dots)
+local function strsetlen(str, len, dots)
    if string.len(str) > len and dots then
       return string.sub(str, 1, len - 4) .. "... "
    elseif string.len(str) > len then
@@ -144,16 +139,16 @@ function strsetlen(str, len, dots)
    else return rpad(str, len, ' ') end
 end
 
-function stderr(...)
+local function stderr(...)
    io.stderr:write(...)
    io.stderr:write("\n")
 end
 
-function stdout(...)
+local function stdout(...)
    print(...)
 end
 
-function split(str, pat)
+local function split(str, pat)
    local t = {}  -- NOTE: use {n = 0} in Lua-5.0
    local fpat = "(.-)" .. pat
    local last_end = 1
@@ -174,7 +169,7 @@ end
 
 -- basename("aaa") -> "aaa"
 -- basename("aaa.bbb.ccc") -> "ccc"
-function basename(n)
+local function basename(n)
    if not string.find(n, '[\\.]') then
       return n
    else
@@ -183,11 +178,11 @@ function basename(n)
    end
 end
 
-function car(tab)
+local function car(tab)
    return tab[1]
 end
 
-function cdr(tab)
+local function cdr(tab)
    local new_array = {}
    for i = 2, table.getn(tab) do
       table.insert(new_array, tab[i])
@@ -195,7 +190,7 @@ function cdr(tab)
    return new_array
 end
 
-function cons(car, cdr)
+local function cons(car, cdr)
    local new_array = {car}
   for _,v in cdr do
      table.insert(new_array, v)
@@ -203,7 +198,7 @@ function cons(car, cdr)
   return new_array
 end
 
-function flatten(t)
+local function flatten(t)
    function __flatten(res, t)
       if type(t) == 'table' then
          for k,v in ipairs(t) do __flatten(res, v) end
@@ -216,7 +211,7 @@ function flatten(t)
    return __flatten({}, t)
 end
 
-function deepcopy(object)
+local function deepcopy(object)
    local lookup_table = {}
    local function _copy(object)
       if type(object) ~= "table" then
@@ -234,7 +229,7 @@ function deepcopy(object)
    return _copy(object)
 end
 
-function imap(f, tab)
+local function imap(f, tab)
    local newtab = {}
    if tab == nil then return newtab end
    for i,v in ipairs(tab) do
@@ -244,7 +239,7 @@ function imap(f, tab)
    return newtab
 end
 
-function map(f, tab)
+local function map(f, tab)
    local newtab = {}
    if tab == nil then return newtab end
    for i,v in pairs(tab) do
@@ -254,7 +249,7 @@ function map(f, tab)
    return newtab
 end
 
-function filter(f, tab)
+local function filter(f, tab)
    local newtab= {}
    if not tab then return newtab end
    for i,v in pairs(tab) do
@@ -265,12 +260,12 @@ function filter(f, tab)
    return newtab
 end
 
-function foreach(f, tab)
+local function foreach(f, tab)
    if not tab then return end
    for i,v in pairs(tab) do f(v,i) end
 end
 
-function foldr(func, val, tab)
+local function foldr(func, val, tab)
    if not tab then return val end
    for i,v in pairs(tab) do
       val = func(val, v)
@@ -283,7 +278,7 @@ end
 -- @param root root to start from
 -- @param pred predicate that nodes must be satisfied for function application.
 -- @return table of return values
-function maptree(fun, root, pred)
+local function maptree(fun, root, pred)
    local res = {}
    local function __maptree(tab)
       foreach(function(v, k)
@@ -299,10 +294,10 @@ end
 
 -- O' Scheme, where art thou?
 -- turn operator into function
-function AND(a, b) return a and b end
+local function AND(a, b) return a and b end
 
 -- and which takes table
-function andt(...)
+local function andt(...)
    local res = true
    local tab = {...}
    for _,t in ipairs(tab) do
@@ -311,11 +306,11 @@ function andt(...)
    return res
 end
 
-function eval(str)
+local function eval(str)
    return assert(loadstring(str))()
 end
 
-function unrequire(m)
+local function unrequire(m)
    package.loaded[m] = nil
    _G[m] = nil
 end
@@ -324,7 +319,7 @@ end
 -- @param t1 value 1
 -- @param t2 value 2
 -- @return true if the same, false otherwise.
-function table_cmp(t1, t2)
+local function table_cmp(t1, t2)
    local function __cmp(t1, t2)
       -- t1 _and_ t2 are not tables
       if not (type(t1) == 'table' and type(t2) == 'table') then
@@ -348,7 +343,7 @@ function table_cmp(t1, t2)
    return __cmp(t1,t2) and __cmp(t2,t1)
 end
 
-function table_has(t, x)
+local function table_has(t, x)
    for _,e in ipairs(t) do
       if e==x then return true end
    end
@@ -356,7 +351,7 @@ function table_has(t, x)
 end
 
 --- Return a new table with unique elements.
-function table_unique(t)
+local function table_unique(t)
    local res = {}
    for i,v in ipairs(t) do
       if not table_has(res, v) then res[#res+1]=v end
@@ -369,7 +364,7 @@ end
 -- @param f ordering function (alphabetically if nil)
 -- @return key, value (iterator)
 --- taken from <https://www.lua.org/pil/19.3.html>
-function pairs_order (t, f)
+local function pairs_order (t, f)
   local a = {}
   for n in pairs(t) do table.insert(a, n) end
     table.sort(a, f)
@@ -388,7 +383,7 @@ end
 -- value is an array of zero to many option parameters.
 -- @param standard Lua argument table
 -- @return key-value table
-function proc_args(args)
+local function proc_args(args)
    local function is_opt(s) return string.sub(s, 1, 1) == '-' end
    local res = { [0]={} }
    local last_key = 0
@@ -413,7 +408,7 @@ end
 -- @param where string <code>before</code>' or <code>after</code>
 -- @param oldfun (can be nil)
 -- @param newfunc
-function advise(where, oldfun, newfun)
+local function advise(where, oldfun, newfun)
    assert(where == 'before' or where == 'after',
           "advise: Invalid value " .. tostring(where) .. " for where")
 
@@ -429,14 +424,14 @@ end
 --- Check wether a file exists.
 -- @param fn filename to check.
 -- @return true or false
-function file_exists(fn)
+local function file_exists(fn)
    local f=io.open(fn);
    if f then io.close(f); return true end
    return false
 end
 
 --- From Book  "Lua programming gems", Chapter 2, pg. 26.
-function memoize (f)
+local function memoize (f)
    local mem = {}                       -- memoizing table
    setmetatable(mem, {__mode = "kv"})   -- make it weak
    return function (x)                  -- new version of ’f’, with memoizing
@@ -450,7 +445,7 @@ function memoize (f)
 end
 
 --- call thunk every s+ns seconds.
-function gen_do_every(s, ns, thunk, gettime)
+local function gen_do_every(s, ns, thunk, gettime)
    local next = { sec=0, nsec=0 }
    local cur = { sec=0, nsec=0 }
    local inc = { sec=s, nsec=ns }
@@ -471,7 +466,7 @@ end
 -- @param warn optionally warn if there are nonexpanded parameters.
 -- @return new string
 -- @return number of unexpanded parameters
-function expand(tpl, params, warn)
+local function expand(tpl, params, warn)
    if warn==nil then warn=true end
    local unexp = 0
 
@@ -497,7 +492,7 @@ end
 -- @param optional environment table.
 -- @return true or false depending on success
 -- @return function or error message
-function eval_sandbox(unsafe_code, env)
+local function eval_sandbox(unsafe_code, env)
    env = env or {}
 --    print(unsafe_code)
    local unsafe_fun, msg = load(unsafe_code, nil, 't', env)
@@ -513,7 +508,7 @@ end
 -- @param env environment table (optional)
 -- @param chunkname named code chunk (optional)
 -- @return function or error message
-function eval_sandbox51(code,env,chunkname)
+local function eval_sandbox51(code,env,chunkname)
   local env = env or {}
   local chunkname = chunkname or 'anonymous'
   local untrusted_fnc, msg    = loadstring(code)
@@ -532,7 +527,7 @@ end
 -- @param env environment for sandbox (default {})
 -- @param verbose print verbose error message in case of failure
 -- @return preprocessed result.
-function preproc(str, env, verbose)
+local function preproc(str, env, verbose)
    local chunk = {"__res={}\n" }
    local lines = split(str, "\n")
 
@@ -571,7 +566,7 @@ end
 -- @param str string to convert
 -- @param space space between values (default: "")
 -- @return hex string
-function str_to_hexstr(str,spacer)
+local function str_to_hexstr(str,spacer)
    return string.lower(
       (string.gsub(str,"(.)",
                    function (c)
@@ -583,13 +578,13 @@ end
 -- @param x1
 -- @param x2
 -- @return the maximum
-function max(x1, x2) if x1>x2 then return x1; else return x2; end end
+local function max(x1, x2) if x1>x2 then return x1; else return x2; end end
 
 --- Return the minimum of two numbers
 -- @param x1
 -- @param x2
 -- @return the minimum
-function min(x1, x2) if x1>x2 then return x2; else return x1; end end
+local function min(x1, x2) if x1>x2 then return x2; else return x1; end end
 
 --- Convert a list as lua array (lua-table,index numbers) to a set
 --  (as lua-table, key existance)
@@ -597,14 +592,14 @@ function min(x1, x2) if x1>x2 then return x2; else return x1; end end
 -- value is an array of zero to many option parameters.
 -- @param standard Lua array/list as table
 -- @return set lua as table
-function list2set(list)
+local function list2set(list)
     local set = {}
   for _, l in ipairs(list) do set[l] = true end
   return set
 end
 
 --- returns number of element in a table
-function list_size(list)
+local function list_size(list)
   local count = 0
   for i,v in pairs(list) do count =  count +1 end
   return count
@@ -614,7 +609,7 @@ end
 -- @param spaces string to be repeated
 -- @param index number of repetitions
 -- @return  string
-function gen_spaces(space,idx)
+local function gen_spaces(space,idx)
   local str = ''
   for i=1,idx do
     str = str..space
@@ -626,7 +621,7 @@ end
 -- @param file filename
 -- @return file (as string)
 -- @todo move to generic utils
-function read_file(file)
+local function read_file(file)
    local f = assert(io.open(file, "rb"))
    local data = f:read("*all")
    f:close()
@@ -637,7 +632,7 @@ end
 -- @param T1 target (table)
 -- @param T2 origin (table)
 -- @param preserve original value if key is conflicting. (boolean, default true)
-function merge_tab(t1,t2,preserve)
+local function merge_tab(t1,t2,preserve)
   local preserve = preserve or true
   for i,v in pairs(t2) do
     if not t1[i] or (not preserve) then t1[i] = v end
@@ -649,7 +644,7 @@ end
 -- @param first initial index
 -- @param last last index
 -- @returns table[first:last]
-function subrange(t, first, last)
+local function subrange(t, first, last)
   local sub = {}
   for i=first,last do
     sub[#sub + 1] = t[i]
@@ -667,7 +662,7 @@ end
 -- @param f function to memoize
 -- @param dim cache dimension
 -- @returns result of function
-function cmemoize(f,dim)
+local function cmemoize(f,dim)
   local _delfnc = function(tab)
     local idx, count
     for i,v in pairs(tab) do
@@ -693,3 +688,63 @@ function cmemoize(f,dim)
     return r.value
   end
 end
+                                    
+-- Exposing...
+M.append         = append
+M.tab2str        = tab2str
+M.wrap           = wrap
+M.lpad           = lpad
+M.rpad           = rpad
+M.pp             = pp
+M.trim           = trim
+M.ltrim          = ltrim
+M.rtrim          = rtrim
+M.strip_ansi     = strip_ansi
+M.strsetlen      = strsetlen
+M.stderr         = stderr
+M.stdout         = stdout
+M.split          = split
+M.basename       = basename
+M.car            = car
+M.cdr            = cdr
+M.cons           = cons
+M.flatten        = flatten
+M.deepcopy       = deepcopy
+M.imap           = imap
+M.map            = map
+M.filter         = filter
+M.foreach        = foreach
+M.foldr          = foldr
+M.maptree        = maptree
+M.AND            = AND
+M.andt           = andt
+M.eval           = eval
+M.unrequire      = unrequire
+M.table_cmp      = table_cmp
+M.table_has      = table_has
+M.table_unique   = table_unique
+M.pairs_order    = pairs_order
+M.proc_args      = proc_args
+M.advise         = advise
+M.file_exists    = file_exists
+M.memoize        = memoize
+M.gen_do_every   = gen_do_every
+M.expand         = expand
+M.eval_sandbox   = eval_sandbox
+M.eval_sandbox51 = eval_sandbox51
+M.preproc        = preproc
+M.str_to_hexstr  = str_to_hexstr
+M.max            = max
+M.min            = min
+M.list2set       = list2set
+M.list_size      = list_size
+M.gen_spaces     = gen_spaces                            
+M.read_file      = read_file
+M.merge_tab      = merge_Tab
+M.subrange       = subrange                                    
+M.cmemoize       = cmemoize
+
+return M
+
+                                    
+
