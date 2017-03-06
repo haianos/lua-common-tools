@@ -513,7 +513,7 @@ end
 -- @param env environment table (optional)
 -- @param chunkname named code chunk (optional)
 -- @return function or error message
-local function eval_sandbox51(code,env,chunkname)
+function eval_sandbox51(code,env,chunkname)
   local env = env or {}
   local chunkname = chunkname or 'anonymous'
   local untrusted_fnc, msg    = loadstring(code)
