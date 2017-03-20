@@ -132,7 +132,10 @@ local function server_response(methods,request)
     req = json.decode(request)
   end
   local fnc = methods[req['method']]
-  if not fnc or (not fnc.fcall) then -- method not found
+  if type(fnc) ~= 'table' then -- method not found
+    return jsonrpc.response_error(req,'method_not_found')
+  end
+  if not fnc.fcall then -- method not found
     return jsonrpc.response_error(req,'method_not_found')
   end
   local fcall = fnc.fcall

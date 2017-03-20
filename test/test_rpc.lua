@@ -38,22 +38,31 @@ print('result is',res)
 
 ------------
 print('testing server_response')
-res = jsonrpc.server_response(methods,str)
+methods2 = {
+  sum = { fcall = function(a,b) return a+b end},
+  sub = { fcall = function(a,b) return a-b end},
+  mul = { fcall = function(a,b) return a*b end },
+  div = { fcall = function(a,b) return a/b end },
+  several = { fcall = function(a,b) return a/b, b/a end},
+  info    = { fcall = function(str) print(str) end}
+}
+
+res = jsonrpc.server_response(methods2,str)
 print('result is ok',res)
 --
 str = jsonrpc.request('sum',1,'gatto')
-res = jsonrpc.server_response(methods,str)
+res = jsonrpc.server_response(methods2,str)
 print('result is invalid params',res)
 --
 str = jsonrpc.request('several',10,20)    
 print('testing server_response')
-res = jsonrpc.server_response(methods,str)
+res = jsonrpc.server_response(methods2,str)
 print('result is ok',res)
 --
 str = jsonrpc.request('several',1,'gatto')
-res = jsonrpc.server_response(methods,str)
+res = jsonrpc.server_response(methods2,str)
 print('result is invalid params',res)
 --
 str = jsonrpc.notification('info','qualcosa')
-res = jsonrpc.server_response(methods,str)
+res = jsonrpc.server_response(methods2,str)
 print('result is true',res)
