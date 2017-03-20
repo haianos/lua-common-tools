@@ -132,12 +132,16 @@ local function server_response(methods,request)
     req = json.decode(request)
   end
   local fnc = methods[req['method']]
-  if not fnc then -- method not found
+  if not fnc or (not fnc.fcall) then -- method not found
     return jsonrpc.response_error(req,'method_not_found')
   end
+  local fcall = fnc.fcall
+  local packoption = fnc.packoption or false
   local params = req['params'] or {}
   if type(params) ~= 'table' then params = {params} end
-  local ret = {pcall(fnc,unpack(params))}
+  local ret
+  if packoption then ret = {pcall(fcall,unpack(params))} 
+  else ret = {pcall(fcall,params)} end
   if not ret[1] then 
     return jsonrpc.response_error(req,'invalid_params',ret[2])
   end
