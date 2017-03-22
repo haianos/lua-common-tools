@@ -139,7 +139,7 @@ local function server_response(methods,request)
     return jsonrpc.response_error(req,'method_not_found')
   end
   local fcall = fnc.fcall
-  local packoption = fnc.packoption or false
+  local packoption = fnc.unpack or false
   local params = req['params'] or {}
   if type(params) ~= 'table' then params = {params} end
   local ret
