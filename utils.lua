@@ -740,7 +740,7 @@ M.list2set       = list2set
 M.list_size      = list_size
 M.gen_spaces     = gen_spaces                            
 M.read_file      = read_file
-M.merge_tab      = merge_Tab
+M.merge_tab      = merge_tab
 M.subrange       = subrange                                    
 M.cmemoize       = cmemoize
 
