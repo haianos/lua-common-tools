@@ -10,7 +10,7 @@ local M = {}
 
 -- increment major on API breaks
 -- increment minor on non breaking changes
-M.VERSION=1.011
+M.VERSION=1.012
 
 local function append(car, ...)
    assert(type(car) == 'table')
@@ -688,6 +688,27 @@ local function cmemoize(f,dim)
     return r.value
   end
 end
+
+                                    
+-- LCS: longest common substring
+---@param a string
+---@param b string
+---@return string common substring (if any)
+local function lcs(a,b)
+  if #a == 0 or #b == 0 then
+    return ""
+  elseif string.sub( a, -1, -1 ) == string.sub( b, -1, -1 ) then
+    return lcs( string.sub( a, 1, -2 ), string.sub( b, 1, -2 ) ) .. string.sub( a, -1, -1 )
+  else
+    local a_sub = lcs( a, string.sub( b, 1, -2 ) )
+    local b_sub = lcs( string.sub( a, 1, -2 ), b )
+    if #a_sub > #b_sub then
+      return a_sub
+    else
+      return b_sub
+    end
+  end
+end
                                     
 -- Exposing...
 M.append         = append
@@ -743,6 +764,7 @@ M.read_file      = read_file
 M.merge_tab      = merge_tab
 M.subrange       = subrange                                    
 M.cmemoize       = cmemoize
+M.lcs            = lcs
 
 return M
 
