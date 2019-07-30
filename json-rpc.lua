@@ -25,6 +25,12 @@ local error_objects = {
 
 local id_counter = 0
 
+-- backward compatibility 5.2/5.3
+local unpack = unpack
+if not unpack then
+  unpack = table.unpack
+end
+
 -- Get an error object, if exists
 -- @param ename name of the error object
 -- @returns true, error object (nil otherwise)
